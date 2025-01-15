@@ -130,6 +130,16 @@ app.get("/all-meals/:email", verifyToken, verifyAdmin, async (req, res) => {
   const meals = await mealsCollection.find(query).toArray();
   res.send(meals);
 });
+app.delete("/delete/meal/:id", verifyToken, verifyAdmin, async (req, res) => {
+  const id = req.params.id;
+  const result = await mealsCollection.deleteOne({ _id: new ObjectId(id) });
+  res.send(result);
+});
+app.get("/view-meal/:id", verifyToken, verifyAdmin, async (req, res) => {
+  const id = req.params.id;
+  const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
+  res.send(meal);
+});
 // ===========Admin Related============
 
 // ===========User Related============
