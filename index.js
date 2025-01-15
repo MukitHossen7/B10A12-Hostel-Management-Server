@@ -160,6 +160,11 @@ app.get("/all-meals", async (req, res) => {
     .toArray();
   res.send(filteredMeals);
 });
+app.get("/meal-details/:id", async (req, res) => {
+  const id = req.params.id;
+  const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
+  res.send(meal);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
