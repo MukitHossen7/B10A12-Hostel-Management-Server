@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const { connection, client } = require("./DB/MongoDB");
+const { ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 connection();
@@ -12,7 +13,7 @@ connection();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -100,6 +101,22 @@ app.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   const email = req.params.email;
   const user = await usersCollection.findOne({ email });
   res.send(user);
+});
+app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
+  const users = await usersCollection.find().toArray();
+  res.send(users);
+});
+app.patch("/users/role/:id", async (req, res) => {
+  const id = req.params.id;
+  const { role } = req.body;
+  const updateDoc = {
+    $set: { role: role },
+  };
+  const result = await usersCollection.updateOne(
+    { _id: new ObjectId(id) },
+    updateDoc
+  );
+  res.send(result);
 });
 // ===========Admin Related============
 
