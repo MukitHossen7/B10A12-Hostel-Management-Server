@@ -124,6 +124,12 @@ app.post("/add-meals", verifyToken, verifyAdmin, async (req, res) => {
   const result = await mealsCollection.insertOne(meal);
   res.send(result);
 });
+app.get("/all-meals/:email", verifyToken, verifyAdmin, async (req, res) => {
+  const email = req.params.email;
+  const query = { "distributor.email": email };
+  const meals = await mealsCollection.find(query).toArray();
+  res.send(meals);
+});
 // ===========Admin Related============
 
 // ===========User Related============
