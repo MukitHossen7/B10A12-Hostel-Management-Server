@@ -101,8 +101,16 @@ app.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   const user = await usersCollection.findOne({ email });
   res.send(user);
 });
-
 // ===========Admin Related============
+
+// ===========User Related============
+app.get("/user/:email", verifyToken, async (req, res) => {
+  const email = req.params.email;
+  const user = await usersCollection.findOne({ email });
+  res.send(user);
+});
+
+// ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
 });
