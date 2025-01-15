@@ -94,6 +94,15 @@ app.get("/user/role/:email", async (req, res) => {
   }
 });
 //get data from User Collection by role base
+
+// ===========Admin Related============
+app.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
+  const email = req.params.email;
+  const user = await usersCollection.findOne({ email });
+  res.send(user);
+});
+
+// ===========Admin Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
 });
