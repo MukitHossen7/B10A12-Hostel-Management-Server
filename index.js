@@ -148,7 +148,18 @@ app.get("/user/:email", verifyToken, async (req, res) => {
   const user = await usersCollection.findOne({ email });
   res.send(user);
 });
-
+app.get("/all-meals", async (req, res) => {
+  const category = req.query.category;
+  if (category === "All Meals") {
+    const meals = await mealsCollection.find().toArray();
+    res.send(meals);
+    return;
+  }
+  const filteredMeals = await mealsCollection
+    .find({ category: category })
+    .toArray();
+  res.send(filteredMeals);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
