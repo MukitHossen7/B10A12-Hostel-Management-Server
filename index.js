@@ -45,8 +45,9 @@ const verifyAdmin = async (req, res, next) => {
 };
 //Custom Middleware
 
-//All Collection
+//All Collection mealsCollection
 const usersCollection = client.db("hostelManagement").collection("users");
+const mealsCollection = client.db("hostelManagement").collection("meals");
 //All Collection
 
 //Create token use jwt
@@ -116,6 +117,11 @@ app.patch("/users/role/:id", async (req, res) => {
     { _id: new ObjectId(id) },
     updateDoc
   );
+  res.send(result);
+});
+app.post("/add-meals", verifyToken, verifyAdmin, async (req, res) => {
+  const meal = req.body;
+  const result = await mealsCollection.insertOne(meal);
   res.send(result);
 });
 // ===========Admin Related============
