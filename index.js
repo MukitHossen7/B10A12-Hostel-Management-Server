@@ -49,6 +49,7 @@ const verifyAdmin = async (req, res, next) => {
 const usersCollection = client.db("hostelManagement").collection("users");
 const mealsCollection = client.db("hostelManagement").collection("meals");
 const reviewsCollection = client.db("hostelManagement").collection("reviews");
+const premiumsCollection = client.db("hostelManagement").collection("premiums");
 //All Collection
 
 //Create token use jwt
@@ -139,6 +140,10 @@ app.get("/view-meal/:id", verifyToken, verifyAdmin, async (req, res) => {
   const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
   res.send(meal);
 });
+app.get("/get-admin-reviews", verifyToken, verifyAdmin, async (req, res) => {
+  const reviews = await reviewsCollection.find().toArray();
+  res.send(reviews);
+});
 // ===========Admin Related============
 
 // ===========User Related============
@@ -198,6 +203,15 @@ app.get("/check-subscription/:email", async (req, res) => {
   const email = req.params.email;
   const user = await usersCollection.findOne({ email });
   res.send(user);
+});
+app.get("/all-premiums", async (req, res) => {
+  const premiums = await premiumsCollection.find().toArray();
+  res.send(premiums);
+});
+app.get("/all-premiums/:package", verifyToken, async (req, res) => {
+  const packageType = req.params.package;
+  const premiums = await premiumsCollection.findOne({ name: packageType });
+  res.send(premiums);
 });
 // ===========User Related============
 app.get("/", (req, res) => {
