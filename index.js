@@ -125,10 +125,8 @@ app.post("/add-meals", verifyToken, verifyAdmin, async (req, res) => {
   const result = await mealsCollection.insertOne(meal);
   res.send(result);
 });
-app.get("/all-meals/:email", verifyToken, verifyAdmin, async (req, res) => {
-  const email = req.params.email;
-  const query = { "distributor.email": email };
-  const meals = await mealsCollection.find(query).toArray();
+app.get("/all-meals-admin", verifyToken, verifyAdmin, async (req, res) => {
+  const meals = await mealsCollection.find().toArray();
   res.send(meals);
 });
 app.delete("/delete/meal/:id", verifyToken, verifyAdmin, async (req, res) => {
@@ -195,6 +193,11 @@ app.get("/reviews/:id", async (req, res) => {
   const id = req.params.id;
   const reviews = await reviewsCollection.find({ foodId: id }).toArray();
   res.send(reviews);
+});
+app.get("/check-subscription/:email", async (req, res) => {
+  const email = req.params.email;
+  const user = await usersCollection.findOne({ email });
+  res.send(user);
 });
 // ===========User Related============
 app.get("/", (req, res) => {
