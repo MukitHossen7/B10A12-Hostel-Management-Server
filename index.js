@@ -252,6 +252,13 @@ app.get("/meal/requested/:email", verifyToken, async (req, res) => {
     .toArray();
   res.send(requestedMeals);
 });
+app.get("/payment/history/:email", verifyToken, async (req, res) => {
+  const email = req.params.email;
+  const paymentHistory = await paymentCollection
+    .find({ "customer.email": email })
+    .toArray();
+  res.send(paymentHistory);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
