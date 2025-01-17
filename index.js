@@ -245,6 +245,13 @@ app.post("/request-meal", verifyToken, async (req, res) => {
   const result = await requestMealCollection.insertOne(requestMeal);
   res.send(result);
 });
+app.get("/meal/requested/:email", verifyToken, async (req, res) => {
+  const email = req.params.email;
+  const requestedMeals = await requestMealCollection
+    .find({ "customer.email": email })
+    .toArray();
+  res.send(requestedMeals);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
