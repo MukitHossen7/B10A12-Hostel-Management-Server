@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const stripe = require("stripe")(process.env.PAYMENT_SECTET_KEY);
+
 const cors = require("cors");
 const { connection, client } = require("./DB/MongoDB");
 const { ObjectId } = require("mongodb");
@@ -50,6 +52,7 @@ const usersCollection = client.db("hostelManagement").collection("users");
 const mealsCollection = client.db("hostelManagement").collection("meals");
 const reviewsCollection = client.db("hostelManagement").collection("reviews");
 const premiumsCollection = client.db("hostelManagement").collection("premiums");
+const paymentCollection = client.db("hostelManagement").collection("payments");
 //All Collection
 
 //Create token use jwt
@@ -99,6 +102,26 @@ app.get("/user/role/:email", async (req, res) => {
 });
 //get data from User Collection by role base
 
+//Create payment Intent
+app.post("/create-payment-intent", verifyToken, async (req, res) => {
+  const { price } = req.body;
+  const amount = price * 100;
+  const { client_secret } = await stripe.paymentIntents.create({
+    amount: amount,
+    currency: "usd",
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+
+  // res.send({ clientSecret: response.client_secret });
+  res.send(client_secret);
+});
+app.post("/payment-info", verifyToken, async (req, res) => {
+  const payment = req.body;
+  const result = await paymentCollection.insertOne(payment);
+  res.send(result);
+});
 // ===========Admin Related============
 app.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   const email = req.params.email;
