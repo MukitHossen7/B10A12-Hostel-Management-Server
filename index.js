@@ -236,6 +236,15 @@ app.get("/all-premiums/:package", verifyToken, async (req, res) => {
   const premiums = await premiumsCollection.findOne({ name: packageType });
   res.send(premiums);
 });
+app.patch("/update-based", verifyToken, async (req, res) => {
+  const { email, packageType } = req.body;
+  const filter = { email: email };
+  const updateDoc = {
+    $set: { badge: packageType },
+  };
+  const result = await usersCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
