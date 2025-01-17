@@ -52,6 +52,9 @@ const usersCollection = client.db("hostelManagement").collection("users");
 const mealsCollection = client.db("hostelManagement").collection("meals");
 const premiumsCollection = client.db("hostelManagement").collection("premiums");
 const paymentCollection = client.db("hostelManagement").collection("payments");
+const requestMealCollection = client
+  .db("hostelManagement")
+  .collection("requestMeals");
 //All Collection
 
 //Create token use jwt
@@ -235,6 +238,11 @@ app.patch("/update-based", verifyToken, async (req, res) => {
     $set: { badge: packageType },
   };
   const result = await usersCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
+app.post("/request-meal", verifyToken, async (req, res) => {
+  const requestMeal = req.body;
+  const result = await requestMealCollection.insertOne(requestMeal);
   res.send(result);
 });
 // ===========User Related============
