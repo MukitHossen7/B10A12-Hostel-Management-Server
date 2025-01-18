@@ -283,6 +283,13 @@ app.patch("/update-reviews/:id", verifyToken, async (req, res) => {
   const result = await mealsCollection.updateOne(filter, updateDoc);
   res.send(result);
 });
+app.get("/reviews/user/:email", verifyToken, async (req, res) => {
+  const email = req.params.email;
+  const reviews = await reviewCollection
+    .find({ "customer.email": email })
+    .toArray();
+  res.send(reviews);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
