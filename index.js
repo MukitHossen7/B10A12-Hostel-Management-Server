@@ -199,6 +199,7 @@ app.post("/add-meals", verifyToken, verifyAdmin, async (req, res) => {
   res.send(result);
 });
 app.get("/all-meals-admin", verifyToken, verifyAdmin, async (req, res) => {
+  const { email } = req.query;
   const meals = await mealsCollection.find().toArray();
   res.send(meals);
 });
