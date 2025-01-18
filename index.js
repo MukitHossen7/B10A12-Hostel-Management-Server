@@ -52,6 +52,7 @@ const usersCollection = client.db("hostelManagement").collection("users");
 const mealsCollection = client.db("hostelManagement").collection("meals");
 const premiumsCollection = client.db("hostelManagement").collection("premiums");
 const paymentCollection = client.db("hostelManagement").collection("payments");
+const reviewCollection = client.db("hostelManagement").collection("reviews");
 const requestMealCollection = client
   .db("hostelManagement")
   .collection("requestMeals");
@@ -205,17 +206,17 @@ app.patch("/update-like/:id", verifyToken, async (req, res) => {
   res.send(result);
 });
 
-app.patch("/update-reviews/:id", async (req, res) => {
-  const review = req.body;
-  const id = req.params.id;
-  const filter = { _id: new ObjectId(id) };
-  const updateDoc = {
-    $push: { reviews: review },
-  };
+// app.patch("/update-reviews/:id", async (req, res) => {
+//   const review = req.body;
+//   const id = req.params.id;
+//   const filter = { _id: new ObjectId(id) };
+//   const updateDoc = {
+//     $push: { reviews: review },
+//   };
 
-  const result = await mealsCollection.updateOne(filter, updateDoc);
-  res.send(result);
-});
+//   const result = await mealsCollection.updateOne(filter, updateDoc);
+//   res.send(result);
+// });
 
 app.get("/check-subscription/:email", async (req, res) => {
   const email = req.params.email;
@@ -258,6 +259,29 @@ app.get("/payment/history/:email", verifyToken, async (req, res) => {
     .find({ "customer.email": email })
     .toArray();
   res.send(paymentHistory);
+});
+app.post("/reviews", verifyToken, async (req, res) => {
+  const review = req.body;
+  const result = await reviewCollection.insertOne(review);
+  res.send(result);
+});
+app.get("/reviews/:id", async (req, res) => {
+  const id = req.params.id;
+  const reviews = await reviewCollection.find({ foodId: id }).toArray();
+  res.send(reviews);
+});
+app.patch("/update-reviews/:id", verifyToken, async (req, res) => {
+  const { status } = req.body;
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  let updateDoc;
+  if (status === "inc") {
+    updateDoc = {
+      $inc: { reviews: 1 },
+    };
+  }
+  const result = await mealsCollection.updateOne(filter, updateDoc);
+  res.send(result);
 });
 // ===========User Related============
 app.get("/", (req, res) => {
