@@ -132,9 +132,55 @@ app.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   res.send(user);
 });
 app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
+  const query = req.query.search;
+  if (query) {
+    const searchUser = await usersCollection
+      .find({
+        $or: [
+          {
+            email: { $regex: query, $options: "i" },
+          },
+          {
+            displayName: { $regex: query, $options: "i" },
+          },
+        ],
+      })
+      .toArray();
+    res.send(searchUser);
+    return;
+  }
+
   const users = await usersCollection.find().toArray();
   res.send(users);
 });
+
+// app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
+//   try {
+//     const query = req.query.search?.trim(); // Trim to handle unnecessary spaces
+//     let users;
+
+//     if (query) {
+//       // Sanitize the input
+//       const regex = new RegExp(query, "i"); // Create a case-insensitive regex
+//       users = await usersCollection
+//         .find({
+//           $or: [
+//             { email: { $regex: regex } },
+//             { displayName: { $regex: regex } },
+//           ],
+//         })
+//         .toArray();
+//     } else {
+//       users = await usersCollection.find().toArray();
+//     }
+
+//     res.status(200).send(users);
+//   } catch (error) {
+//     console.error("Error fetching users:", error);
+//     res.status(500).send({ message: "Internal Server Error" });
+//   }
+// });
+
 app.patch("/users/role/:id", async (req, res) => {
   const id = req.params.id;
   const { role } = req.body;
