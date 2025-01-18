@@ -170,6 +170,28 @@ app.get("/get-admin-reviews", verifyToken, verifyAdmin, async (req, res) => {
   const reviews = await reviewsCollection.find().toArray();
   res.send(reviews);
 });
+app.get("/all-serves", verifyToken, verifyAdmin, async (req, res) => {
+  const serves = await requestMealCollection.find().toArray();
+  res.send(serves);
+});
+app.patch(
+  "/all-serves/status/:id",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    const id = req.params.id;
+    const { status } = req.body;
+    const updateDoc = {
+      $set: { status: status },
+    };
+    const result = await requestMealCollection.updateOne(
+      { _id: new ObjectId(id) },
+      updateDoc
+    );
+    res.send(result);
+  }
+);
+
 // ===========Admin Related============
 
 // ===========User Related============
@@ -289,6 +311,13 @@ app.get("/reviews/user/:email", verifyToken, async (req, res) => {
     .find({ "customer.email": email })
     .toArray();
   res.send(reviews);
+});
+app.delete("/request-meal/cancel/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const result = await requestMealCollection.deleteOne({
+    _id: new ObjectId(id),
+  });
+  res.send(result);
 });
 // ===========User Related============
 app.get("/", (req, res) => {
