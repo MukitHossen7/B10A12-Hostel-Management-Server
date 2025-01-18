@@ -213,7 +213,7 @@ app.get("/view-meal/:id", verifyToken, verifyAdmin, async (req, res) => {
   res.send(meal);
 });
 app.get("/get-admin-reviews", verifyToken, verifyAdmin, async (req, res) => {
-  const reviews = await reviewsCollection.find().toArray();
+  const reviews = await reviewCollection.find().toArray();
   res.send(reviews);
 });
 app.get("/all-serves", verifyToken, verifyAdmin, async (req, res) => {
@@ -278,7 +278,11 @@ app.get("/all-meals", async (req, res) => {
 app.get("/meal-details/:id", async (req, res) => {
   const id = req.params.id;
   const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
-  res.send(meal);
+  const ratings = meal.rating.map((rating) => rating);
+  const ratingReduce = ratings.reduce((acc, rating) => acc + rating, 0);
+  const averageRating = Math.floor(ratingReduce / ratings.length);
+  const mealWithRating = { ...meal, averageRating };
+  res.send({ meal: mealWithRating });
 });
 app.patch("/update-like/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
@@ -393,6 +397,16 @@ app.get("/api/meals", async (req, res) => {
   }
   const meals = await mealsCollection.find(filter).toArray();
   res.send(meals);
+});
+app.patch("/update-rating/:id", verifyToken, async (req, res) => {
+  const { rating } = req.body;
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $push: { rating: rating },
+  };
+  const result = await mealsCollection.updateOne(filter, updateDoc);
+  res.send(result);
 });
 // ===========User Related============
 app.get("/", (req, res) => {
