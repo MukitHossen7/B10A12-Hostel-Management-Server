@@ -388,6 +388,9 @@ app.get("/api/meals", async (req, res) => {
   if (search) {
     filter.title = { $regex: search, $options: "i" };
   }
+  if (category) {
+    filter.category = category;
+  }
   const meals = await mealsCollection.find(filter).toArray();
   res.send(meals);
 });
