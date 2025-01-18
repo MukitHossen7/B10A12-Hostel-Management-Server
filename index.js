@@ -382,6 +382,15 @@ app.delete("/request-meal/cancel/:id", verifyToken, async (req, res) => {
   });
   res.send(result);
 });
+app.get("/api/meals", async (req, res) => {
+  const { search, category } = req.query;
+  let filter = {};
+  if (search) {
+    filter.title = { $regex: search, $options: "i" };
+  }
+  const meals = await mealsCollection.find(filter).toArray();
+  res.send(meals);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
