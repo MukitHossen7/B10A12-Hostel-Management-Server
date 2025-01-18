@@ -217,6 +217,23 @@ app.get("/get-admin-reviews", verifyToken, verifyAdmin, async (req, res) => {
   res.send(reviews);
 });
 app.get("/all-serves", verifyToken, verifyAdmin, async (req, res) => {
+  const query = req.query.search;
+  if (query) {
+    const searchUser = await requestMealCollection
+      .find({
+        $or: [
+          {
+            "customer.email": { $regex: query, $options: "i" },
+          },
+          {
+            "customer.name": { $regex: query, $options: "i" },
+          },
+        ],
+      })
+      .toArray();
+    res.send(searchUser);
+    return;
+  }
   const serves = await requestMealCollection.find().toArray();
   res.send(serves);
 });
