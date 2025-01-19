@@ -199,7 +199,14 @@ app.post("/add-meals", verifyToken, verifyAdmin, async (req, res) => {
   res.send(result);
 });
 app.get("/all-meals-admin", verifyToken, verifyAdmin, async (req, res) => {
-  const meals = await mealsCollection.find().toArray();
+  const { sortBy } = req.query;
+  const validSortFields = ["likes", "reviews"];
+  const sortField = validSortFields.includes(sortBy) ? sortBy : "likes";
+
+  const meals = await mealsCollection
+    .find()
+    .sort({ [sortField]: -1 })
+    .toArray();
   const mealsWithAverageRating = meals.map((meal) => {
     const ratings = meal.rating || [];
     const totalRating = ratings.reduce((acc, rate) => acc + rate, 0);
@@ -339,18 +346,6 @@ app.patch("/update-like/:id", verifyToken, async (req, res) => {
   res.send(result);
 });
 
-// app.patch("/update-reviews/:id", async (req, res) => {
-//   const review = req.body;
-//   const id = req.params.id;
-//   const filter = { _id: new ObjectId(id) };
-//   const updateDoc = {
-//     $push: { reviews: review },
-//   };
-
-//   const result = await mealsCollection.updateOne(filter, updateDoc);
-//   res.send(result);
-// });
-
 app.get("/check-subscription/:email", async (req, res) => {
   const email = req.params.email;
   const user = await usersCollection.findOne({ email });
@@ -439,7 +434,15 @@ app.get("/api/meals", async (req, res) => {
   const { search, category, minPrice, maxPrice } = req.query;
   let filter = {};
   if (search) {
-    filter.title = { $regex: search, $options: "i" };
+    filter = {
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+        { ingredients: { $regex: search, $options: "i" } },
+      ],
+    };
+    // filter.;
   }
   if (category) {
     filter.category = category;
