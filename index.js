@@ -431,13 +431,22 @@ app.delete("/request-meal/cancel/:id", verifyToken, async (req, res) => {
   res.send(result);
 });
 app.get("/api/meals", async (req, res) => {
-  const { search, category } = req.query;
+  const { search, category, minPrice, maxPrice } = req.query;
   let filter = {};
   if (search) {
     filter.title = { $regex: search, $options: "i" };
   }
   if (category) {
     filter.category = category;
+  }
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) {
+      filter.price.$gte = Number(minPrice);
+    }
+    if (maxPrice) {
+      filter.price.$lte = Number(maxPrice);
+    }
   }
   const meals = await mealsCollection.find(filter).toArray();
   res.send(meals);
