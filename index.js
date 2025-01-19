@@ -471,6 +471,12 @@ app.delete("/delete-reviews/:id", verifyToken, async (req, res) => {
   const result = await reviewCollection.deleteOne({ _id: new ObjectId(id) });
   res.send(result);
 });
+app.get("/users-reviews/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const reviews = await reviewCollection.findOne({ _id: new ObjectId(id) });
+
+  res.send(reviews);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
