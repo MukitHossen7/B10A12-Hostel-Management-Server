@@ -477,6 +477,16 @@ app.get("/users-reviews/:id", verifyToken, async (req, res) => {
 
   res.send(reviews);
 });
+app.patch("/user-update-reviews/:id", verifyToken, async (req, res) => {
+  const { description, reviewRatings } = req.body;
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $set: { description, reviewRatings },
+  };
+  const result = await reviewCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
 // ===========User Related============
 app.get("/", (req, res) => {
   res.send("Hostel Management System is running");
