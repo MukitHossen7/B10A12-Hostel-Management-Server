@@ -255,7 +255,31 @@ app.patch(
     res.send(result);
   }
 );
-
+app.patch(
+  "/all-meals/updata/:id",
+  verifyAdmin,
+  verifyAdmin,
+  async (req, res) => {
+    const id = req.params.id;
+    const meal = req.body;
+    const updateDoc = {
+      $set: {
+        title: meal.title,
+        price: meal.price,
+        description: meal.description,
+        category: meal.category,
+        postTime: meal.postTime,
+        ingredients: meal.ingredients,
+        image: meal.image,
+      },
+    };
+    const result = await mealsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      updateDoc
+    );
+    res.send(result);
+  }
+);
 // ===========Admin Related============
 
 // ===========User Related============
