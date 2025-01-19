@@ -199,9 +199,18 @@ app.post("/add-meals", verifyToken, verifyAdmin, async (req, res) => {
   res.send(result);
 });
 app.get("/all-meals-admin", verifyToken, verifyAdmin, async (req, res) => {
-  const { email } = req.query;
   const meals = await mealsCollection.find().toArray();
-  res.send(meals);
+  const mealsWithAverageRating = meals.map((meal) => {
+    const ratings = meal.rating || [];
+    const totalRating = ratings.reduce((acc, rate) => acc + rate, 0);
+    const averageRating =
+      ratings.length > 0 ? (totalRating / ratings.length).toFixed(1) : 0;
+    return {
+      ...meal,
+      averageRating: parseFloat(averageRating),
+    };
+  });
+  res.send(mealsWithAverageRating);
 });
 app.delete("/delete/meal/:id", verifyToken, verifyAdmin, async (req, res) => {
   const id = req.params.id;
@@ -257,7 +266,7 @@ app.patch(
 );
 app.patch(
   "/all-meals/updata/:id",
-  verifyAdmin,
+  verifyToken,
   verifyAdmin,
   async (req, res) => {
     const id = req.params.id;
@@ -303,9 +312,10 @@ app.get("/all-meals", async (req, res) => {
 app.get("/meal-details/:id", async (req, res) => {
   const id = req.params.id;
   const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
-  const ratings = meal.rating.map((rating) => rating);
+  const ratings = meal.rating.map((rating) => rating) || [];
   const ratingReduce = ratings.reduce((acc, rating) => acc + rating, 0);
-  const averageRating = Math.floor(ratingReduce / ratings.length);
+  const averageRating =
+    ratings.length > 0 ? Math.floor(ratingReduce / ratings.length) : 0;
   const mealWithRating = { ...meal, averageRating };
   res.send({ meal: mealWithRating });
 });
