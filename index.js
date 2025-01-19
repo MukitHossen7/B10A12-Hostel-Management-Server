@@ -299,15 +299,24 @@ app.get("/user/:email", verifyToken, async (req, res) => {
 });
 app.get("/all-meals", async (req, res) => {
   const category = req.query.category;
-  if (category === "All Meals") {
-    const meals = await mealsCollection.find().toArray();
-    res.send(meals);
-    return;
-  }
-  const filteredMeals = await mealsCollection
-    .find({ category: category })
-    .toArray();
-  res.send(filteredMeals);
+  const meals =
+    category === "All Meals"
+      ? await mealsCollection.find().toArray()
+      : await mealsCollection.find({ category }).toArray();
+
+  const mealsWithAverageRating = meals.map((meal) => {
+    const ratings = meal.rating || [];
+    const totalRating = ratings.reduce((acc, rate) => acc + rate, 0);
+    const averageRating =
+      ratings.length > 0 ? (totalRating / ratings.length).toFixed(1) : 0;
+    return {
+      ...meal,
+      averageRating: parseFloat(averageRating),
+    };
+  });
+
+  res.send(mealsWithAverageRating);
+  // res.send(filteredMeals);
 });
 app.get("/meal-details/:id", async (req, res) => {
   const id = req.params.id;
