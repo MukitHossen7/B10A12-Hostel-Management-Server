@@ -413,6 +413,11 @@ app.patch("/update-reviews/:id", verifyToken, async (req, res) => {
       $inc: { reviews: 1 },
     };
   }
+  if (status === "dec") {
+    updateDoc = {
+      $inc: { reviews: -1 },
+    };
+  }
   const result = await mealsCollection.updateOne(filter, updateDoc);
   res.send(result);
 });
@@ -459,6 +464,11 @@ app.patch("/update-rating/:id", verifyToken, async (req, res) => {
     $push: { rating: rating },
   };
   const result = await mealsCollection.updateOne(filter, updateDoc);
+  res.send(result);
+});
+app.delete("/delete-reviews/:id", verifyToken, async (req, res) => {
+  const id = req.params.id;
+  const result = await reviewCollection.deleteOne({ _id: new ObjectId(id) });
   res.send(result);
 });
 // ===========User Related============
