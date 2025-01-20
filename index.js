@@ -296,6 +296,16 @@ app.patch(
     res.send(result);
   }
 );
+app.get("/upcoming-meals-admin", verifyToken, verifyAdmin, async (req, res) => {
+  const upComing = await mealsCollection
+    .find()
+    .sort({
+      likes: -1,
+    })
+    .toArray();
+  const statusFilter = upComing.filter((meal) => meal.status === "upcoming");
+  res.send(statusFilter);
+});
 // ===========Admin Related============
 
 // ===========User Related============
