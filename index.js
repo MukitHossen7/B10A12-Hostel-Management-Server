@@ -349,9 +349,20 @@ app.get("/meal-details/:id", async (req, res) => {
 });
 app.patch("/update-like/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
-  const filter = { _id: new ObjectId(id) };
+  const { userEmail } = req.body;
 
+  const likedUser = await mealsCollection.findOne({
+    _id: new ObjectId(id),
+    userEmail,
+  });
+  if (likedUser) {
+    return res
+      .status(400)
+      .send({ message: "User has already liked this meal." });
+  }
+  const filter = { _id: new ObjectId(id) };
   const updateDoc = {
+    $set: { userEmail: userEmail },
     $inc: { likes: 1 },
   };
   const result = await mealsCollection.updateOne(filter, updateDoc);
@@ -504,6 +515,14 @@ app.patch("/user-update-reviews/:id", verifyToken, async (req, res) => {
   };
   const result = await reviewCollection.updateOne(filter, updateDoc);
   res.send(result);
+});
+app.get("/meal/upcoming-user", async (req, res) => {
+  const upcomingMeals = await mealsCollection
+    .find({
+      status: "upcoming",
+    })
+    .toArray();
+  res.send(upcomingMeals);
 });
 // ===========User Related============
 app.get("/", (req, res) => {
