@@ -56,6 +56,9 @@ const reviewCollection = client.db("hostelManagement").collection("reviews");
 const requestMealCollection = client
   .db("hostelManagement")
   .collection("requestMeals");
+const upcomingLikeCollection = client
+  .db("hostelManagement")
+  .collection("Likes");
 //All Collection
 
 //Create token use jwt
@@ -306,6 +309,33 @@ app.get("/upcoming-meals-admin", verifyToken, verifyAdmin, async (req, res) => {
   const statusFilter = upComing.filter((meal) => meal.status === "upcoming");
   res.send(statusFilter);
 });
+app.get(
+  "/upcoming-meals-admin/:id",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    const id = req.params.id;
+    const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
+    res.send(meal);
+  }
+);
+app.patch(
+  "/update-status-upcoming-meals-admin/:id",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    console.log(filter);
+    const updateDoc = {
+      $set: {
+        status: "published",
+      },
+    };
+    const result = await mealsCollection.updateOne(filter, updateDoc);
+    res.send(result);
+  }
+);
 // ===========Admin Related============
 
 // ===========User Related============
@@ -351,8 +381,8 @@ app.patch("/update-like/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const { userEmail } = req.body;
 
-  const likedUser = await mealsCollection.findOne({
-    _id: new ObjectId(id),
+  const likedUser = await upcomingLikeCollection.findOne({
+    likeId: id,
     userEmail,
   });
   if (likedUser) {
@@ -362,13 +392,16 @@ app.patch("/update-like/:id", verifyToken, async (req, res) => {
   }
   const filter = { _id: new ObjectId(id) };
   const updateDoc = {
-    $set: { userEmail: userEmail },
     $inc: { likes: 1 },
   };
   const result = await mealsCollection.updateOne(filter, updateDoc);
   res.send(result);
 });
-
+app.post("/upcoming-meal-like", verifyToken, async (req, res) => {
+  const likeData = req.body;
+  const result = await upcomingLikeCollection.insertOne(likeData);
+  res.send(result);
+});
 app.get("/check-subscription/:email", async (req, res) => {
   const email = req.params.email;
   const user = await usersCollection.findOne({ email });
