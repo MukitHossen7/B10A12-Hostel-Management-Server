@@ -321,8 +321,10 @@ app.get("/all-meals", async (req, res) => {
       averageRating: parseFloat(averageRating),
     };
   });
-
-  res.send(mealsWithAverageRating);
+  const statusByFilter = mealsWithAverageRating.filter(
+    (meal) => meal.status === "published"
+  );
+  res.send(statusByFilter);
   // res.send(filteredMeals);
 });
 app.get("/meal-details/:id", async (req, res) => {
@@ -433,6 +435,7 @@ app.delete("/request-meal/cancel/:id", verifyToken, async (req, res) => {
 app.get("/api/meals", async (req, res) => {
   const { search, category, minPrice, maxPrice } = req.query;
   let filter = {};
+
   if (search) {
     filter = {
       $or: [
@@ -457,7 +460,9 @@ app.get("/api/meals", async (req, res) => {
     }
   }
   const meals = await mealsCollection.find(filter).toArray();
-  res.send(meals);
+  const statusByMeals = meals.filter((meal) => meal.status === "published");
+  console.log(statusByMeals);
+  res.send(statusByMeals);
 });
 app.patch("/update-rating/:id", verifyToken, async (req, res) => {
   const { rating } = req.body;
