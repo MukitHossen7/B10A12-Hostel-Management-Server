@@ -230,7 +230,11 @@ app.delete("/delete/meal/:id", verifyToken, verifyAdmin, async (req, res) => {
 app.get("/view-meal/:id", verifyToken, verifyAdmin, async (req, res) => {
   const id = req.params.id;
   const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
-  res.send(meal);
+  const mealRating = meal.rating.map((rate) => rate);
+  const reduceRating = mealRating.reduce((acc, rating) => acc + rating, 0);
+  const averageRating =
+    mealRating.length > 0 ? Math.round(reduceRating / mealRating?.length) : 0;
+  res.send({ ...meal, averageRating });
 });
 app.get("/get-admin-reviews", verifyToken, verifyAdmin, async (req, res) => {
   const reviews = await reviewCollection.find().toArray();
