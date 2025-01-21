@@ -15,7 +15,11 @@ connection();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://b10a12-final-project-ffb43.web.app",
+    ],
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -519,7 +523,6 @@ app.get("/api/meals", async (req, res) => {
   }
   const meals = await mealsCollection.find(filter).toArray();
   const statusByMeals = meals.filter((meal) => meal.status === "published");
-  console.log(statusByMeals);
   res.send(statusByMeals);
 });
 app.patch("/update-rating/:id", verifyToken, async (req, res) => {
