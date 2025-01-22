@@ -9,47 +9,47 @@
 
 ## Features
 
-1.User Authentication and Authorization:
+### User Authentication and Authorization:
 
 - Secure JWT-based authentication with role-based access control.
 - Cookie-based token management for secure and persistent sessions.
 
-  2.Admin Controls:
+### Admin Controls:
 
 - Manage users, including role updates and search functionality.
 - Admin-only access to meal management and review controls.
 
-  3.Meal Management:
+### Meal Management:
 
 - CRUD operations for meals, including adding, updating, viewing, and deleting meals.
 - Dynamic sorting and filtering by categories and likes.
 
-  4.Review System:
+### Review System:
 
 - Users can add, view, and manage reviews for meals.
 - Admins can monitor and update review statuses.
 
-  5.Request Meal Feature:
+### Request Meal Feature:
 
 - Users can request meals, which are stored in a separate collection for admin review.
 - Admins can approve or reject meal requests.
 
-  6.Payment Integration:
+### Payment Integration:
 
 - Stripe-based payment processing for secure transactions.
 - Payment history and premium subscription management.
 
-  7.Middleware for Security:
+### Middleware for Security:
 
 - Custom middleware for verifying tokens and admin roles.
 - Prevention of unauthorized access to protected routes.
 
-  8.Database Management:
+### Database Management:
 
 - MongoDB collections for users, meals, reviews, payments, and requests.
 - Optimized queries for efficient data retrieval.
 
-  9.Search and Filter Functionality:
+### Search and Filter Functionality:
 
 - Dynamic search options for users and meals based on various criteria.
 - Case-insensitive and partial matching for enhanced user experience.
@@ -65,15 +65,15 @@
 
 ## Installation and Setup
 
-1.Clone the repository
+### Clone the repository
 
 - git clone
 
-  2.Install dependencies
+### Install dependencies
 
 - npm install
 
-  3.Start the server
+### Start the server
 
 - nodemon index.js / npm run dev
 
