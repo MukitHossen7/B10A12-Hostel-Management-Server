@@ -1,4 +1,4 @@
-## Website Name : Hostel Management System
+## Website Name : Hostel Management Server
 
 - Description :
 - This repository contains the server-side implementation of the Hostel Management System, built using Node.js, Express.js, MongoDB, and other technologies. The server provides robust features for user authentication, meal management, admin controls, and payment processing.
@@ -79,31 +79,31 @@
 
 ## API Endpoints
 
-1.Authentication
+### Authentication
 
 - POST /jwt - Generate a JWT for user authentication.
 - POST /logout - Logout a user by clearing the authentication cookie.
 
-  2.User Management
+### User Management
 
 - POST /users - Register a new user.
 - GET /user/:email - Retrieve user details by email.
 - PATCH /users/role/:id - Update user role.
 
-  3.Meal Management
+### Meal Management
 
 - POST /add-meals - Add a new meal (Admin only).
 - GET /all-meals - Retrieve all published meals with filtering options.
 - PATCH /update-like/:id - Increment likes for a meal.
 - DELETE /delete/meal/:id - Delete a meal (Admin only).
 
-  3.Payment
+### Payment
 
 - POST /create-payment-intent - Generate a payment intent for Stripe.
 - POST /payment-info - Save payment details after successful transactions.
 - GET /payment/history/:email - Retrieve payment history for a user.
 
-  3.Reviews
+### Reviews
 
 - POST /reviews - Add a review for a meal.
 - GET /reviews/:id - Get reviews for a specific meal.
