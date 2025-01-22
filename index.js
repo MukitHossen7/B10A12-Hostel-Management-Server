@@ -234,10 +234,10 @@ app.delete("/delete/meal/:id", verifyToken, verifyAdmin, async (req, res) => {
 app.get("/view-meal/:id", verifyToken, verifyAdmin, async (req, res) => {
   const id = req.params.id;
   const meal = await mealsCollection.findOne({ _id: new ObjectId(id) });
-  const mealRating = meal.rating.map((rate) => rate);
-  const reduceRating = mealRating.reduce((acc, rating) => acc + rating, 0);
+  const mealRating = meal?.rating?.map((rate) => rate);
+  const reduceRating = mealRating?.reduce((acc, rating) => acc + rating, 0);
   const averageRating =
-    mealRating.length > 0 ? Math.round(reduceRating / mealRating?.length) : 0;
+    mealRating?.length > 0 ? Math.round(reduceRating / mealRating?.length) : 0;
   res.send({ ...meal, averageRating });
 });
 app.get("/get-admin-reviews", verifyToken, verifyAdmin, async (req, res) => {
@@ -495,7 +495,14 @@ app.delete("/request-meal/cancel/:id", verifyToken, async (req, res) => {
   res.send(result);
 });
 app.get("/api/meals", async (req, res) => {
-  const { search, category, minPrice, maxPrice } = req.query;
+  const {
+    search,
+    category,
+    minPrice,
+    maxPrice,
+    page = 1,
+    limit = 6,
+  } = req.query;
   let filter = {};
 
   if (search) {
@@ -507,7 +514,6 @@ app.get("/api/meals", async (req, res) => {
         { ingredients: { $regex: search, $options: "i" } },
       ],
     };
-    // filter.;
   }
   if (category) {
     filter.category = category;
@@ -521,9 +527,19 @@ app.get("/api/meals", async (req, res) => {
       filter.price.$lte = Number(maxPrice);
     }
   }
-  const meals = await mealsCollection.find(filter).toArray();
+  const skip = (page - 1) * limit;
+  const meals = await mealsCollection
+    .find(filter)
+    .skip(skip)
+    .limit(Number(limit))
+    .toArray();
+  const totalMeals = await mealsCollection.countDocuments(filter);
   const statusByMeals = meals.filter((meal) => meal.status === "published");
-  res.send(statusByMeals);
+  res.send({
+    meals: statusByMeals,
+    totalMeals: totalMeals || 0,
+    hasMore: skip + meals.length < totalMeals,
+  });
 });
 app.patch("/update-rating/:id", verifyToken, async (req, res) => {
   const { rating } = req.body;
