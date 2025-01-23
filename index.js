@@ -3,7 +3,6 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const stripe = require("stripe")(process.env.PAYMENT_SECTET_KEY);
-
 const cors = require("cors");
 const { connection, client } = require("./DB/MongoDB");
 const { ObjectId } = require("mongodb");
