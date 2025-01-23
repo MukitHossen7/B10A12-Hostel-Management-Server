@@ -160,34 +160,6 @@ app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
   const users = await usersCollection.find().toArray();
   res.send(users);
 });
-
-// app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
-//   try {
-//     const query = req.query.search?.trim(); // Trim to handle unnecessary spaces
-//     let users;
-
-//     if (query) {
-//       // Sanitize the input
-//       const regex = new RegExp(query, "i"); // Create a case-insensitive regex
-//       users = await usersCollection
-//         .find({
-//           $or: [
-//             { email: { $regex: regex } },
-//             { displayName: { $regex: regex } },
-//           ],
-//         })
-//         .toArray();
-//     } else {
-//       users = await usersCollection.find().toArray();
-//     }
-
-//     res.status(200).send(users);
-//   } catch (error) {
-//     console.error("Error fetching users:", error);
-//     res.status(500).send({ message: "Internal Server Error" });
-//   }
-// });
-
 app.patch("/users/role/:id", async (req, res) => {
   const id = req.params.id;
   const { role } = req.body;
@@ -334,7 +306,6 @@ app.patch(
   async (req, res) => {
     const id = req.params.id;
     const filter = { _id: new ObjectId(id) };
-    console.log(filter);
     const updateDoc = {
       $set: {
         status: "published",
@@ -495,16 +466,9 @@ app.delete("/request-meal/cancel/:id", verifyToken, async (req, res) => {
   res.send(result);
 });
 app.get("/api/meals", async (req, res) => {
-  const {
-    search,
-    category,
-    minPrice,
-    maxPrice,
-    page = 1,
-    limit = 6,
-  } = req.query;
-  let filter = {};
+  const { search, category, minPrice, maxPrice } = req.query;
 
+  let filter = {};
   if (search) {
     filter = {
       $or: [
@@ -527,18 +491,15 @@ app.get("/api/meals", async (req, res) => {
       filter.price.$lte = Number(maxPrice);
     }
   }
-  const skip = (page - 1) * limit;
+
   const meals = await mealsCollection
     .find(filter)
-    .skip(skip)
-    .limit(Number(limit))
+
     .toArray();
-  const totalMeals = await mealsCollection.countDocuments(filter);
+
   const statusByMeals = meals.filter((meal) => meal.status === "published");
   res.send({
     meals: statusByMeals,
-    totalMeals: totalMeals || 0,
-    hasMore: skip + meals.length < totalMeals,
   });
 });
 app.patch("/update-rating/:id", verifyToken, async (req, res) => {
