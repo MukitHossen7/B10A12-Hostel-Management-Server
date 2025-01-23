@@ -501,6 +501,7 @@ app.get("/api/meals", async (req, res) => {
     meals: statusByMeals,
   });
 });
+
 app.patch("/update-rating/:id", verifyToken, async (req, res) => {
   const { rating } = req.body;
   const id = req.params.id;
