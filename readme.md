@@ -108,3 +108,13 @@
 - POST /reviews - Add a review for a meal.
 - GET /reviews/:id - Get reviews for a specific meal.
 - PATCH /update-reviews/:id - Update review count for a meal.
+
+## dependencies:
+
+- "cookie-parser": "^1.4.7",
+- "cors": "^2.8.5",
+- "dotenv": "^16.4.7",
+- "express": "^4.21.2",
+- "jsonwebtoken": "^9.0.2",
+- "mongodb": "^6.12.0",
+- "stripe": "^17.5.0"
